@@ -1,0 +1,23 @@
+{
+    "createdBy": "Redirector v3.5.3",
+    "createdAt": "2023-12-16T13:15:37.640Z",
+    "redirects": [
+        {
+            "description": "Wikiwand",
+            "exampleUrl": "https://en.wikipedia.org/wiki/The_Nighthawk_Star",
+            "exampleResult": "https://www.wikiwand.com/en/The_Nighthawk_Star",
+            "error": null,
+            "includePattern": "^https:\\/\\/(?:([a-zA-Z]+)\\.)?(?:m\\.)?wikipedia\\.org\\/wiki\\/(.+)$",
+            "excludePattern": "",
+            "patternDesc": "Language and the destination part of Wikipedia URL are used in Wikiwand",
+            "redirectUrl": "https://www.wikiwand.com/$1/$2",
+            "patternType": "R",
+            "processMatches": "noProcessing",
+            "disabled": false,
+            "grouped": false,
+            "appliesTo": [
+                "main_frame"
+            ]
+        }
+    ]
+}
