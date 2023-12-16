@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Desidime Redirect Removal
-// @version     4
+// @version     4.1
 // @run-at      document-start
 // @description Remove URL Tracking/Redirects from Desidime.com
 // @include     https://www.desidime.com/*
@@ -9,9 +9,7 @@
 // @namespace   https://greasyfork.org/users/878597
 // @supportURL  https://github.com/kunalagra/
 // @run-at      document-end
-// @icon        https://cdn0.desidime.com/logo/favicon.ico
-// @downloadURL https://update.greasyfork.org/scripts/440342/Desidime%20Redirect%20Removal.user.js
-// @updateURL https://update.greasyfork.org/scripts/440342/Desidime%20Redirect%20Removal.meta.js
+// @icon        https://play-lh.googleusercontent.com/Xzge4MB_HwymEGmd0iz_6ZOR6tPGaJYqNa1wVwggioBH_JvVoURc5_O-itr3jctyig
 // ==/UserScript==
 
 function fixDesiDimeLinks() {
