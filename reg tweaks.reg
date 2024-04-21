@@ -1,0 +1,7 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\Microsoft\Office\16.0\Common\SignIn]
+"SignInOptions"=dword:00000003
+
+[HKEY_CURRENT_USER\Software\Synaptics\SynTP\TouchPadRMIHID2cTM3336-1]
+"2FingerTapAction"=dword:00000002
