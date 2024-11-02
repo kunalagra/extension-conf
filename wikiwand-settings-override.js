@@ -1,43 +1,79 @@
 // ==UserScript==
-// @name        Wikiwand Settings Override
-// @namespace   https://github.com/kunalagra/
-// @match       https://www.wikiwand.com/*
-// @grant       none
-// @version     1.0
-// @author      kunalagra
+// @name        Wikiwand Setting Override
+// @version     1.2
 // @description Update settings for Wikiwand.com to prefered values
+// @include     https://www.wikiwand.com/*
+// @author      kunalagra
 // @license     MIT
-// @icon        https://wikiwandv2-19431.kxcdn.com/icons/icon-180x180.png
+// @namespace   https://greasyfork.org/users/878597
+// @supportURL  https://github.com/kunalagra/
+// @run-at      document-end
+// @icon        https://www.wikiwand.com/icon-512.png
 // ==/UserScript==
 
 (function() {
     'use strict';
 
-    function updateLocalStorage() {
-        // Your key-value pair to update in local storage
-      var keyToUpdate = 'settings';
-      var updatedValue = '{"theme":"auto","fontSize":5,"fontFamily":"sans","justify":true,"cover":true,"shrinkTOC":false,"linksColor":true,"references":true,"openAI":false,"readyToRender":true,"stickyNavbar":true,"articleWidth":5}';
-
-        // Check if local storage is supported
-        if (typeof(Storage) !== "undefined") {
-            // Check if the key already exists in local storage
-            if (localStorage.getItem(keyToUpdate)) {
-                // Update the value of the key
-                localStorage.setItem(keyToUpdate, updatedValue);
-                console.log('Local storage updated:', keyToUpdate, updatedValue);
-            } else {
-                // If the key doesn't exist, create it
-                localStorage.setItem(keyToUpdate, updatedValue);
-                console.log('New key added to local storage:', keyToUpdate, updatedValue);
-            }
-        } else {
-            console.error('Local storage is not supported.');
+      const settingsObject = {
+        "columnWidth": "62em",
+        "theme": "black",
+        "fontSize": "17.5px",
+        "fontBody": {
+            "FALLBACK": "var(--base-font-body)",
+            "ja": "var(--font-m-plus-rounded-1c)",
+            "zh": "var(--font-noto-sans-sc)",
+            "ko": "var(--font-ibm-plex-sans-kr)",
+            "he": "var(--font-rubik)",
+            "ar": "var(--font-ibm-plex-sans-arabic)",
+            "th": "var(--font-ibm-plex-sans-thai)",
+            "hi": "var(--font-hind)"
+        },
+        "fontHeader": {
+            "FALLBACK": "var(--base-font-header)",
+            "ja": "var(--font-zen-kaku-gothic-new)",
+            "zh": "var(--font-noto-serif-sc)",
+            "ko": "var(--font-nanum-gothic)",
+            "he": "var(--font-secular-one)",
+            "ar": "var(--font-tajawal)",
+            "th": "var(--font-kanit)",
+            "hi": "var(--font-mukta)"
+        },
+        "links": "color",
+        "ai": "false",
+        "toc": "true",
+        "textAlign": "auto",
+        "layout": "cover"
+    };
+    // Function to get a cookie value by name
+    function getCookie(name) {
+        const nameEQ = name + "=";
+        const cookiesArray = document.cookie.split(';');
+        for (let i = 0; i < cookiesArray.length; i++) {
+            let cookie = cookiesArray[i].trim();
+            if (cookie.indexOf(nameEQ) === 0) return cookie.substring(nameEQ.length, cookie.length);
         }
+        return null;
     }
 
-    // Run the updateLocalStorage function after the page has fully loaded
-    window.onload = function() {
-        updateLocalStorage();
-    };
+    // Function to set a cookie
+    function setCookie(name, value, days = 7) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        const expires = "; expires=" + date.toUTCString();
+        document.cookie = name + "=" + (value || "") + expires + "; path=/; secure; samesite=None";
+        console.log(`Cookie '${name}' set with value: ${value}`);
+    }
 
+    // Check if the 'settings' cookie exists
+    const settingsCookie = getCookie('settings');
+
+    if (settingsCookie) {
+        console.log(`Cookie 'settings' already exists with value: ${settingsCookie}`);
+    } else {
+        console.log("Cookie 'settings' not found. Setting a new cookie with a defined values.");
+        const settings = JSON.stringify(settingsObject);
+        setCookie('settings', settings);
+        setCookie('wikiwand-omni-intro', true)
+        location.reload();
+    }
 })();
