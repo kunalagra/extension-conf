@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Desidime Redirect Removal
-// @version     4.1
+// @version     5
 // @run-at      document-start
 // @description Remove URL Tracking/Redirects from Desidime.com
 // @include     https://www.desidime.com/*
@@ -12,48 +12,55 @@
 // @icon        https://play-lh.googleusercontent.com/Xzge4MB_HwymEGmd0iz_6ZOR6tPGaJYqNa1wVwggioBH_JvVoURc5_O-itr3jctyig
 // ==/UserScript==
 
-function fixDesiDimeLinks() {
-    // Find and update links in anchor tags
-    const anchorLinks = document.querySelectorAll("a[href*='links?ref']");
-    anchorLinks.forEach((link) => {
-        const originalURL = new URL(link.href).searchParams.get('url');
-        if (originalURL) {
-            link.href = decodeURIComponent(originalURL);
-        }
-    });
+(function() {
+    'use strict';
 
-    // Find and update links in data-href attributes
-    const dataHrefLinks = document.querySelectorAll("a[data-href*='links?ref']");
-    dataHrefLinks.forEach((link) => {
-        const originalURL = new URL(link.getAttribute('data-href')).searchParams.get('url');
-        if (originalURL) {
-            link.setAttribute('data-href', decodeURIComponent(originalURL));
-            link.removeAttribute('target'); // Remove the 'target' attribute
-        }
-    });
-}
+    function fixDesiDimeLinks() {
+        document.querySelectorAll("a[data-href*='links?ref']").forEach(link => {;
+            try {
+                const dataHrefValue = link.getAttribute('data-href');
+                const targetURL = decodeURIComponent(new URL(dataHrefValue).searchParams.get('url')) || link.getAttribute('data-href-alt');
 
-// Function to handle DOM changes
-function handleDOMChanges(mutationsList) {
-    for (const mutation of mutationsList) {
-        if (mutation.type === 'attributes' && mutation.attributeName === 'href') {
-            // Handle attribute changes (e.g., href attribute)
-            fixDesiDimeLinks();
-        } else if (mutation.type === 'childList') {
-            // Handle changes in the DOM structure (e.g., added nodes)
-            fixDesiDimeLinks();
-        }
+                if (targetURL) {
+                    link.setAttribute('data-href', targetURL);
+                    link.href = targetURL;
+                    link.setAttribute('target', '_blank');
+                    link.removeAttribute('data-href-alt');
+                }
+            } catch (error) {
+                console.error('Error processing data-href URL:', error);
+            }
+        });
+
+        // Handle standard 'href' attribute links
+        document.querySelectorAll("a[href*='links?ref']").forEach(link => {
+            try {
+                const originalURL = new URL(link.href, window.location.origin).searchParams.get('url');
+
+                if (originalURL) {
+                    link.href = decodeURIComponent(originalURL);
+                }
+            } catch (error) {
+                console.error('Error processing href URL:', error);
+            }
+        });
     }
-}
 
-// Wrap the MutationObserver setup inside a DOMContentLoaded event listener
-document.addEventListener('DOMContentLoaded', () => {
-    // Use MutationObserver to detect changes in the document
-    const observer = new MutationObserver(handleDOMChanges);
+    // Debounced handler to avoid excessive calls to fixDesiDimeLinks
+    let mutationTimeout;
+    function handleDOMChanges(mutationsList) {
+        if (mutationTimeout) clearTimeout(mutationTimeout);
+        mutationTimeout = setTimeout(() => {
+            fixDesiDimeLinks();
+        }, 100);
+    }
 
-    // Observe changes in the body and its subtree
-    observer.observe(document.body, { attributes: true, childList: true, subtree: true });
-
-    // Call fixDesiDimeLinks once when the DOM is ready
-    fixDesiDimeLinks();
-});
+    document.addEventListener('DOMContentLoaded', () => {
+        const observer = new MutationObserver(handleDOMChanges);
+        observer.observe(document.body, {
+            attributes: true,
+            childList: true,
+            subtree: true
+        });
+    });
+})();
